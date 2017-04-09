@@ -31,6 +31,18 @@ var routes = Routes{
 		"/newgame",
 		NewGame,
 	},
+	Route{
+		"Move",
+		"POST",
+		"/move/{player}",
+		Move,
+	},
+	Route{
+		"Events",
+		"GET",
+		"/events",
+		Events,
+	},
 }
 
 var static = StaticRoutes{
