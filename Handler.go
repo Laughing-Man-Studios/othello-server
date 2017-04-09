@@ -22,22 +22,35 @@ type MoveData struct {
 
 //NewGame is a handler for starting a new Game of Othello
 func NewGame(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Started New Game!")
+	fmt.Println(len(b.subscribers))
+	if len(b.subscribers) > 2 {
+		fmt.Fprintln(w, "Sorry, the game is full")
+	} else {
+		fmt.Fprintln(w, "Started New Game!")
+	}
 }
 
 //Move is a handler for logging a move made by a player
 func Move(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
+	var move MoveData
 
 	for decoder.More() {
-		var u MoveData
-		err := decoder.Decode(&u)
+		err := decoder.Decode(&move)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	fmt.Fprintln(w, "Move Initiated")
+	moveJSON, err := json.Marshal(move)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonStr := string(moveJSON)
+	Publish(jsonStr)
+
+	fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
 }
 
 //Events is the handler for connecting with the SSE broker
@@ -53,10 +66,17 @@ func Events(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Connected To EventHandler!")
 	f.Flush()
 
+	cn := w.(http.CloseNotifier)
+
 	for {
-		m := <-ch
-		msg := fmt.Sprintf("data: %s\n\n", m)
-		fmt.Fprintln(w, msg)
-		f.Flush()
+		select {
+		case m := <-ch:
+			msg := fmt.Sprintf("data: %s\n\n", m)
+			fmt.Fprintln(w, msg)
+			f.Flush()
+		case <-cn.CloseNotify():
+			fmt.Println("Connection Close")
+			return
+		}
 	}
 }
