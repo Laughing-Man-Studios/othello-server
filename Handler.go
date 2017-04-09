@@ -5,42 +5,45 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-)
+	"strconv"
 
-//Square contains the row and col of a designated square on the board
-type Square struct {
-	Row int
-	Col int
-}
+	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
+)
 
 //MoveData tells where a peice moved from and to, and the player who made the move
 type MoveData struct {
-	Old    Square
-	New    Square
+	Row    int
+	Col    int
 	Player int
 }
 
 //NewGame is a handler for starting a new Game of Othello
 func NewGame(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(len(b.subscribers))
-	if len(b.subscribers) > 2 {
-		fmt.Fprintln(w, "Sorry, the game is full")
+	if len(b.subscribers) > 1 {
+		fmt.Fprint(w, false)
 	} else {
-		fmt.Fprintln(w, "Started New Game!")
+		fmt.Fprint(w, true)
 	}
 }
 
 //Move is a handler for logging a move made by a player
 func Move(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
 	var move MoveData
-
-	for decoder.More() {
-		err := decoder.Decode(&move)
-		if err != nil {
-			log.Fatal(err)
-		}
+	vars := mux.Vars(r)
+	player, err := strconv.Atoi(vars["player"])
+	if err != nil {
+		log.Fatal(err)
 	}
+	move.Player = player
+	err = r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decoder := schema.NewDecoder()
+	decoder.Decode(&move, r.PostForm)
 
 	moveJSON, err := json.Marshal(move)
 	if err != nil {
