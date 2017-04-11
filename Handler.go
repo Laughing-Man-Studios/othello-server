@@ -20,11 +20,11 @@ type MoveData struct {
 
 //NewGame is a handler for starting a new Game of Othello
 func NewGame(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(len(b.subscribers))
-	if len(b.subscribers) > 1 {
-		fmt.Fprint(w, false)
+	numOfPlayer := len(b.subscribers)
+	if numOfPlayer > 1 {
+		fmt.Fprint(w, 0)
 	} else {
-		fmt.Fprint(w, true)
+		fmt.Fprint(w, numOfPlayer+1)
 	}
 }
 
