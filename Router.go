@@ -6,8 +6,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const srcPath string = "./src/github.com/Laughing-Man-Studios/othello-server/"
-
 //NewRouter returns a new mux router with each given route and handler to go with
 func NewRouter() *mux.Router {
 	router := mux.NewRouter()
@@ -26,7 +24,7 @@ func NewRouter() *mux.Router {
 
 		router.
 			PathPrefix(route.Pattern).
-			Handler(http.FileServer(http.Dir(srcPath + route.Dir)))
+			Handler(http.FileServer(http.Dir(route.Dir)))
 	}
 
 	return router

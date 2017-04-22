@@ -26,6 +26,7 @@ func NewGame(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprint(w, numOfPlayer+1)
 	}
+	SetupGame()
 }
 
 //Move is a handler for logging a move made by a player
@@ -36,24 +37,26 @@ func Move(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	move.Player = player
-	err = r.ParseForm()
-	if err != nil {
-		log.Fatal(err)
+	if player > 0 {
+		move.Player = player
+		err = r.ParseForm()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		decoder := schema.NewDecoder()
+		decoder.Decode(&move, r.PostForm)
+
+		moveJSON, err := json.Marshal(move)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		jsonStr := string(moveJSON)
+		Publish(jsonStr)
+
+		fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
 	}
-
-	decoder := schema.NewDecoder()
-	decoder.Decode(&move, r.PostForm)
-
-	moveJSON, err := json.Marshal(move)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	jsonStr := string(moveJSON)
-	Publish(jsonStr)
-
-	fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
 }
 
 //Events is the handler for connecting with the SSE broker
