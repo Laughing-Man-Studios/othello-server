@@ -1,3 +1,5 @@
 static/
+.vscode/
+*.exe~
 debug
 gin-bin
