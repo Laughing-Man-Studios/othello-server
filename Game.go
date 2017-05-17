@@ -2,8 +2,11 @@ package main
 
 import "fmt"
 
+const rowLength = 8
+const colLength = 8
+
 type game struct {
-	board [8][8]int
+	board [rowLength][colLength]int
 	score map[int]int
 }
 
@@ -41,13 +44,16 @@ func findPotentialMoves(board [8][8]int, p int) {
 }
 
 func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, board *[8][8]int) {
-	previousTile := board[originX][originY]
-	tile := board[originX+offsetX][originY+offsetY]
+	if offsetX+originX < 0 || offsetY+originY < 0 ||
+		offsetX+originX > rowLength-1 || offsetY+originY > colLength-1 {
+		previousTile := board[originX][originY]
+		tile := board[originX+offsetX][originY+offsetY]
 
-	if tile != p && tile != 0 && tile != 3 {
-		checkDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p, board)
-	} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == 0 {
-		board[originX+offsetX][originY+offsetY] = 3
+		if tile != p && tile != 0 && tile != 3 {
+			checkDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p, board)
+		} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == 0 {
+			board[originX+offsetX][originY+offsetY] = 3
+		}
 	}
 }
 
@@ -69,19 +75,35 @@ func movePiece(move moveData) bool {
 }
 
 func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, p int) bool {
-	previousTile := theGame.board[originX][originY]
-	tile := theGame.board[originX+offsetX][originY+offsetY]
+	if moveInBounds(offsetX+originX, offsetY+originY) {
+		previousTile := theGame.board[originX][originY]
+		tile := theGame.board[originX+offsetX][originY+offsetY]
 
-	if tile != p && tile != 0 && tile != 3 {
-		if validateCheckDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p) == true {
-			theGame.board[originX][originY] = p
+		if tile != p && tile != 0 && tile != 3 {
+			if validateCheckDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p) == true {
+				theGame.board[originX][originY] = p
+				return true
+			}
+		} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == p {
 			return true
 		}
-	} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == p {
-		return true
-	}
 
+		return false
+	}
 	return false
+}
+
+func getValueAt(move moveData) {
+	if moveInBounds(move.Row, move.Col) {
+		fmt.Println(move)
+		fmt.Println(theGame.board[move.Row][move.Col])
+	} else {
+		fmt.Println("Move Out Of Bounds")
+	}
+}
+
+func moveInBounds(x int, y int) bool {
+	return x > 0 && y > 0 && x < rowLength-1 && y < colLength-1
 }
 
 func printGame(board *[8][8]int) {

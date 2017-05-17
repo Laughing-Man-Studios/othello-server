@@ -43,7 +43,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 
 		decoder := schema.NewDecoder()
 		decoder.Decode(&move, r.PostForm)
-
+		getValueAt(move)
 		validMove := movePiece(move)
 		if !validMove {
 			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
