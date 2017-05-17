@@ -7,11 +7,11 @@ import (
 )
 
 //NewRouter returns a new mux router with each given route and handler to go with
-func NewRouter() *mux.Router {
+func newRouter() *mux.Router {
 	router := mux.NewRouter()
-	for _, route := range routes {
+	for _, route := range routeMap {
 		var handler http.Handler
-		handler = Logger(route.HandlerFunc, route.Name)
+		handler = logger(route.HandlerFunc, route.Name)
 
 		router.
 			Methods(route.Method).

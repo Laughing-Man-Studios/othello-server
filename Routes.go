@@ -2,51 +2,47 @@ package main
 
 import "net/http"
 
-//Route is a type representing each route
-type Route struct {
+type route struct {
 	Name        string
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
 
-//StaticRoute is a type representing a route to a folder
-type StaticRoute struct {
+type staticRoute struct {
 	Name    string
 	Method  string
 	Pattern string
 	Dir     string
 }
 
-//Routes is a type containing an array of type Route
-type Routes []Route
+type routes []route
 
-//StaticRoutes is a type containing an array of type StaticRoute
-type StaticRoutes []StaticRoute
+type staticRoutes []staticRoute
 
-var routes = Routes{
-	Route{
+var routeMap = routes{
+	route{
 		"NewGame",
 		"GET",
 		"/newgame",
-		NewGame,
+		newGame,
 	},
-	Route{
+	route{
 		"Move",
 		"POST",
 		"/move/{player}",
-		Move,
+		move,
 	},
-	Route{
+	route{
 		"Events",
 		"GET",
 		"/events",
-		Events,
+		events,
 	},
 }
 
-var static = StaticRoutes{
-	StaticRoute{
+var static = staticRoutes{
+	staticRoute{
 		"Index",
 		"GET",
 		"/",
