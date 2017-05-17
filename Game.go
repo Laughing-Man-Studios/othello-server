@@ -61,8 +61,8 @@ func movePiece(move moveData) bool {
 	var valid = false
 
 	for i := -1; i < 2; i++ {
-		for j := -1; i < 2; i++ {
-			if i != 0 && j != 0 {
+		for j := -1; j < 2; j++ {
+			if i != 0 || j != 0 {
 				moveMaid := validateCheckDirection(i, j, move.Row, move.Col, move.Player)
 				if moveMaid == true {
 					valid = true
@@ -79,12 +79,13 @@ func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, 
 		previousTile := theGame.board[originX][originY]
 		tile := theGame.board[originX+offsetX][originY+offsetY]
 
-		if tile != p && tile != 0 && tile != 3 {
-			if validateCheckDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p) == true {
+		if tile != p && tile != 0 {
+			if validateCheckDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p) {
 				theGame.board[originX][originY] = p
 				return true
 			}
-		} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == p {
+		} else if previousTile != p && previousTile != 0 && tile == p {
+			theGame.board[originX][originY] = p
 			return true
 		}
 

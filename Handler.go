@@ -43,11 +43,11 @@ func move(w http.ResponseWriter, r *http.Request) {
 
 		decoder := schema.NewDecoder()
 		decoder.Decode(&move, r.PostForm)
-		getValueAt(move)
-		validMove := movePiece(move)
-		if !validMove {
+
+		if !movePiece(move) {
 			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
 		} else {
+			printGame(&theGame.board)
 			moveJSON, err := json.Marshal(move)
 			if err != nil {
 				log.Fatal(err)
