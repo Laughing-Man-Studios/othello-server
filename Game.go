@@ -29,10 +29,11 @@ func setupGame() {
 func findPotentialMoves(board [8][8]int, p int) {
 	for rowIndex, row := range board {
 		for colIndex := range row {
-			if theGame.board[rowIndex][colIndex] == p {
+			if board[rowIndex][colIndex] == p {
 				checkDirection(0, 1, rowIndex, colIndex, p, &board)
 				checkDirection(1, 1, rowIndex, colIndex, p, &board)
 				checkDirection(0, -1, rowIndex, colIndex, p, &board)
+				checkDirection(1, -1, rowIndex, colIndex, p, &board)
 				checkDirection(1, 0, rowIndex, colIndex, p, &board)
 				checkDirection(-1, -1, rowIndex, colIndex, p, &board)
 				checkDirection(-1, 0, rowIndex, colIndex, p, &board)
@@ -44,8 +45,7 @@ func findPotentialMoves(board [8][8]int, p int) {
 }
 
 func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, board *[8][8]int) {
-	if offsetX+originX < 0 || offsetY+originY < 0 ||
-		offsetX+originX > rowLength-1 || offsetY+originY > colLength-1 {
+	if moveInBounds(offsetX+originX, offsetY+originY) {
 		previousTile := board[originX][originY]
 		tile := board[originX+offsetX][originY+offsetY]
 
@@ -70,7 +70,14 @@ func movePiece(move moveData) bool {
 			}
 		}
 	}
-
+	if valid {
+		printGame(&theGame.board)
+		var opposingPlayer = 1
+		if move.Player == opposingPlayer {
+			opposingPlayer = 2
+		}
+		findPotentialMoves(theGame.board, opposingPlayer)
+	}
 	return valid
 }
 

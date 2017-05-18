@@ -47,7 +47,6 @@ func move(w http.ResponseWriter, r *http.Request) {
 		if !movePiece(move) {
 			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
 		} else {
-			printGame(&theGame.board)
 			moveJSON, err := json.Marshal(move)
 			if err != nil {
 				log.Fatal(err)
