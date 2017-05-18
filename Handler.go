@@ -15,6 +15,7 @@ type moveData struct {
 	Row    int
 	Col    int
 	Player int
+	Turn   int
 }
 
 func newGame(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +48,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 		if !movePiece(move) {
 			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
 		} else {
+			move.Turn = theGame.turn
 			moveJSON, err := json.Marshal(move)
 			if err != nil {
 				log.Fatal(err)

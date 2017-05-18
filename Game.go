@@ -8,11 +8,13 @@ const colLength = 8
 type game struct {
 	board [rowLength][colLength]int
 	score map[int]int
+	turn  int
 }
 
 var theGame = game{
 	[8][8]int{},
 	map[int]int{},
+	1,
 }
 
 func setupGame() {
@@ -72,27 +74,28 @@ func movePiece(move moveData) bool {
 	}
 	if valid {
 		printGame(&theGame.board)
-		var opposingPlayer = 1
-		if move.Player == opposingPlayer {
-			opposingPlayer = 2
-		}
-		findPotentialMoves(theGame.board, opposingPlayer)
+		findPotentialMoves(theGame.board, getOpposingPlayer(move.Player))
+		theGame.turn = getOpposingPlayer(theGame.turn)
 	}
 	return valid
 }
 
 func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, p int) bool {
 	if moveInBounds(offsetX+originX, offsetY+originY) {
+		oP := getOpposingPlayer(p)
 		previousTile := theGame.board[originX][originY]
 		tile := theGame.board[originX+offsetX][originY+offsetY]
 
 		if tile != p && tile != 0 {
 			if validateCheckDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p) {
 				theGame.board[originX][originY] = p
+				theGame.score[p] = theGame.score[p] + 1
+				theGame.score[oP] = theGame.score[oP] - 1
 				return true
 			}
 		} else if previousTile != p && previousTile != 0 && tile == p {
 			theGame.board[originX][originY] = p
+			theGame.score[p] = theGame.score[p] + 1
 			return true
 		}
 
@@ -108,6 +111,13 @@ func getValueAt(move moveData) {
 	} else {
 		fmt.Println("Move Out Of Bounds")
 	}
+}
+
+func getOpposingPlayer(p int) int {
+	if p == 1 {
+		return 2
+	}
+	return 1
 }
 
 func moveInBounds(x int, y int) bool {
