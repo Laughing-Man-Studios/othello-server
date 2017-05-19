@@ -22,10 +22,12 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	numOfPlayer := len(b.subscribers)
 	if numOfPlayer > 1 {
 		fmt.Fprint(w, 0)
+	} else if numOfPlayer == 0 {
+		fmt.Fprint(w, `{"gameStatus": "waiting", "playerNum": 1}`)
 	} else {
-		fmt.Fprint(w, numOfPlayer+1)
+		fmt.Fprint(w, `{"gameStatus": "started", "playerNum": 2}`)
+		setupGame()
 	}
-	setupGame()
 }
 
 func move(w http.ResponseWriter, r *http.Request) {
