@@ -1,5 +1,10 @@
 package main
 
+import (
+	"encoding/json"
+	"log"
+)
+
 type broker struct {
 	subscribers map[chan string]bool
 }
@@ -25,4 +30,14 @@ func Publish(msg string) {
 	for ch := range b.subscribers {
 		ch <- msg
 	}
+}
+
+func publishEvent(evt event) {
+	eventJSON, err := json.Marshal(evt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonStr := string(eventJSON)
+	Publish(jsonStr)
 }

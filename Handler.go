@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +9,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 )
+
+type event struct {
+	Type string
+	Data interface{}
+}
 
 type moveData struct {
 	Row    int
@@ -26,6 +30,11 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `{"gameStatus": "waiting", "playerNum": 1}`)
 	} else {
 		fmt.Fprint(w, `{"gameStatus": "started", "playerNum": 2}`)
+		var eventData = event{
+			"game",
+			"started",
+		}
+		publishEvent(eventData)
 		setupGame()
 	}
 }
@@ -50,14 +59,13 @@ func move(w http.ResponseWriter, r *http.Request) {
 		if !movePiece(move) {
 			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
 		} else {
-			move.Turn = theGame.turn
-			moveJSON, err := json.Marshal(move)
-			if err != nil {
-				log.Fatal(err)
-			}
 
-			jsonStr := string(moveJSON)
-			Publish(jsonStr)
+			move.Turn = theGame.turn
+			var eventData = event{
+				"move",
+				move,
+			}
+			publishEvent(eventData)
 
 			fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
 		}
