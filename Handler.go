@@ -46,7 +46,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if player > 0 {
+	if player > 0 && player == theGame.turn {
 		move.Player = player
 		err = r.ParseForm()
 		if err != nil {
@@ -70,6 +70,8 @@ func move(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
 		}
 
+	} else {
+		fmt.Fprintln(w, "Invalid Player or Player out of turn")
 	}
 }
 
