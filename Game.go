@@ -63,12 +63,14 @@ func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, b
 func movePiece(move moveData) bool {
 	var valid = false
 
-	for i := -1; i < 2; i++ {
-		for j := -1; j < 2; j++ {
-			if i != 0 || j != 0 {
-				moveMaid := validateCheckDirection(i, j, move.Row, move.Col, move.Player)
-				if moveMaid == true {
-					valid = true
+	if theGame.board[move.Row][move.Col] == 0 {
+		for i := -1; i < 2; i++ {
+			for j := -1; j < 2; j++ {
+				if i != 0 || j != 0 {
+					moveMaid := validateCheckDirection(i, j, move.Row, move.Col, move.Player)
+					if moveMaid == true {
+						valid = true
+					}
 				}
 			}
 		}
