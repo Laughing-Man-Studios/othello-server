@@ -24,6 +24,7 @@ func setupGame() {
 	theGame.board[4][3] = 2
 	theGame.score[1] = 2
 	theGame.score[2] = 2
+	theGame.turn = 1
 	printGame(&theGame.board)
 	findPotentialMoves(theGame.board, 1)
 }
