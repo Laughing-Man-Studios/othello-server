@@ -6,15 +6,17 @@ const rowLength = 8
 const colLength = 8
 
 type game struct {
-	board [rowLength][colLength]int
-	score map[int]int
-	turn  int
+	board  [rowLength][colLength]int
+	score  map[int]int
+	turn   int
+	winner int
 }
 
 var theGame = game{
 	[8][8]int{},
 	map[int]int{},
 	1,
+	0,
 }
 
 func setupGame() {
@@ -29,35 +31,42 @@ func setupGame() {
 	findPotentialMoves(theGame.board, 1)
 }
 
-func findPotentialMoves(board [8][8]int, p int) {
+func findPotentialMoves(board [8][8]int, p int) bool {
+	var playerHasMoves = false
 	for rowIndex, row := range board {
 		for colIndex := range row {
 			if board[rowIndex][colIndex] == p {
-				checkDirection(0, 1, rowIndex, colIndex, p, &board)
-				checkDirection(1, 1, rowIndex, colIndex, p, &board)
-				checkDirection(0, -1, rowIndex, colIndex, p, &board)
-				checkDirection(1, -1, rowIndex, colIndex, p, &board)
-				checkDirection(1, 0, rowIndex, colIndex, p, &board)
-				checkDirection(-1, -1, rowIndex, colIndex, p, &board)
-				checkDirection(-1, 0, rowIndex, colIndex, p, &board)
-				checkDirection(-1, 1, rowIndex, colIndex, p, &board)
+				for i := -1; i < 2; i++ {
+					for j := -1; j < 2; j++ {
+						if i != 0 || j != 0 {
+							hasMove := checkDirection(i, j, rowIndex, colIndex, p, &board)
+							if hasMove == true {
+								playerHasMoves = true
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 	printGame(&board)
+	return playerHasMoves
 }
 
-func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, board *[8][8]int) {
+func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, board *[8][8]int) bool {
+	var rVal = false
 	if moveInBounds(offsetX+originX, offsetY+originY) {
 		previousTile := board[originX][originY]
 		tile := board[originX+offsetX][originY+offsetY]
 
 		if tile != p && tile != 0 && tile != 3 {
-			checkDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p, board)
+			rVal = checkDirection(offsetY, offsetX, originX+offsetX, originY+offsetY, p, board)
 		} else if previousTile != p && previousTile != 0 && previousTile != 3 && tile == 0 {
 			board[originX+offsetX][originY+offsetY] = 3
+			rVal = true
 		}
 	}
+	return rVal
 }
 
 func movePiece(move moveData) bool {
@@ -77,10 +86,20 @@ func movePiece(move moveData) bool {
 	}
 	if valid {
 		printGame(&theGame.board)
-		findPotentialMoves(theGame.board, getOpposingPlayer(move.Player))
-		theGame.turn = getOpposingPlayer(theGame.turn)
+		checkForWin(move)
 	}
 	return valid
+}
+
+func checkForWin(move moveData) {
+	opposingPlayer := getOpposingPlayer(move.Player)
+	if findPotentialMoves(theGame.board, opposingPlayer) {
+		theGame.turn = opposingPlayer
+	} else {
+		if !findPotentialMoves(theGame.board, move.Player) {
+			theGame.winner = move.Player
+		}
+	}
 }
 
 func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, p int) bool {
@@ -106,6 +125,8 @@ func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, 
 	}
 	return false
 }
+
+/*---- Helper Functions -----*/
 
 func getValueAt(move moveData) {
 	if moveInBounds(move.Row, move.Col) {
