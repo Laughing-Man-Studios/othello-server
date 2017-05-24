@@ -5,6 +5,11 @@ import (
 	"log"
 )
 
+type event struct {
+	Type string
+	Data interface{}
+}
+
 type broker struct {
 	subscribers map[chan string]bool
 }

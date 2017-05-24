@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,43 +11,51 @@ import (
 	"github.com/gorilla/schema"
 )
 
-type event struct {
-	Type string
-	Data interface{}
+type moveResponse struct {
+	Valid bool
 }
 
-type moveData struct {
-	Row    int
-	Col    int
+type newGameResponse struct {
+	Full   bool
 	Player int
-	Turn   int
 }
 
 func newGame(w http.ResponseWriter, r *http.Request) {
 	numOfPlayer := len(b.subscribers)
-	if numOfPlayer > 1 {
-		fmt.Fprint(w, 0)
-	} else if numOfPlayer == 0 {
-		fmt.Fprint(w, `{"gameStatus": "waiting", "playerNum": 1}`)
-	} else {
-		fmt.Fprint(w, `{"gameStatus": "started", "playerNum": 2}`)
+	var response = newGameResponse{
+		true,
+		0,
+	}
+	if numOfPlayer == 0 {
+		response.Full = false
+		response.Player = 1
+	} else if numOfPlayer == 1 {
+		response.Full = false
+		response.Player = 2
 		var eventData = event{
 			"game",
-			"started",
+			startData{
+				1,
+			},
 		}
-		publishEvent(eventData)
+		defer publishEvent(eventData)
 		setupGame()
 	}
+	printResponse(w, response)
 }
 
 func move(w http.ResponseWriter, r *http.Request) {
 	var move moveData
+	var response = moveResponse{
+		true,
+	}
 	vars := mux.Vars(r)
 	player, err := strconv.Atoi(vars["player"])
 	if err != nil {
 		log.Fatal(err)
 	}
 	if player > 0 && player == theGame.turn {
+
 		move.Player = player
 		err = r.ParseForm()
 		if err != nil {
@@ -57,22 +66,20 @@ func move(w http.ResponseWriter, r *http.Request) {
 		decoder.Decode(&move, r.PostForm)
 
 		if !movePiece(move) {
-			fmt.Fprintf(w, "Player %v: Invalid Move", move.Player)
+			response.Valid = false
 		} else {
-
 			move.Turn = theGame.turn
 			var eventData = event{
 				"move",
 				move,
 			}
-			publishEvent(eventData)
-
-			fmt.Fprintf(w, "Player %v: Move Initiated", move.Player)
+			defer publishEvent(eventData)
 		}
 
 	} else {
-		fmt.Fprintln(w, "Invalid Player or Player out of turn")
+		response.Valid = false
 	}
+	printResponse(w, response)
 }
 
 func events(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +91,6 @@ func events(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	fmt.Fprintln(w, "Connected To EventHandler!")
 	f.Flush()
 
 	cn := w.(http.CloseNotifier)
@@ -100,4 +106,13 @@ func events(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func printResponse(w http.ResponseWriter, response interface{}) {
+	eventJSON, err := json.Marshal(response)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, string(eventJSON))
 }
