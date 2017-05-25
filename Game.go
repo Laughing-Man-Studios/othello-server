@@ -101,20 +101,29 @@ func movePiece(move moveData) bool {
 	}
 	if valid {
 		printGame(&theGame.board)
-		checkForWin(move)
+		if checkForWin(move) {
+			defer publishEvent(event{
+				"win",
+				endData{
+					move.Player,
+				},
+			})
+		}
 	}
 	return valid
 }
 
-func checkForWin(move moveData) {
+func checkForWin(move moveData) bool {
 	opposingPlayer := getOpposingPlayer(move.Player)
 	if findPotentialMoves(theGame.board, opposingPlayer) {
 		theGame.turn = opposingPlayer
 	} else {
 		if !findPotentialMoves(theGame.board, move.Player) {
 			theGame.winner = move.Player
+			return true
 		}
 	}
+	return false
 }
 
 func validateCheckDirection(offsetY int, offsetX int, originX int, originY int, p int) bool {

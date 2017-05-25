@@ -32,8 +32,10 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	} else if numOfPlayer == 1 {
 		response.Full = false
 		response.Player = 2
+		// TODO: This event needs to happen when both players have connected to the eventHandler.
+		// Need to figure out how to ensure that both are connected (maybe move logic to Broker?)
 		var eventData = event{
-			"game",
+			"start",
 			startData{
 				1,
 			},
@@ -113,6 +115,5 @@ func printResponse(w http.ResponseWriter, response interface{}) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Fprint(w, string(eventJSON))
 }
