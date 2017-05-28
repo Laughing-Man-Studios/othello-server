@@ -10,6 +10,7 @@ type moveData struct {
 	Col    int
 	Player int
 	Turn   int
+	Board  [8][8]int
 }
 
 type startData struct {
@@ -46,7 +47,7 @@ func setupGame() {
 	findPotentialMoves(theGame.board, 1)
 }
 
-func findPotentialMoves(board [8][8]int, p int) bool {
+func findPotentialMoves(board [8][8]int, p int) (bool, [8][8]int) {
 	var playerHasMoves = false
 	for rowIndex, row := range board {
 		for colIndex := range row {
@@ -65,7 +66,7 @@ func findPotentialMoves(board [8][8]int, p int) bool {
 		}
 	}
 	printGame(&board)
-	return playerHasMoves
+	return playerHasMoves, board
 }
 
 func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, board *[8][8]int) bool {
@@ -115,10 +116,12 @@ func movePiece(move moveData) bool {
 
 func checkForWin(move moveData) bool {
 	opposingPlayer := getOpposingPlayer(move.Player)
-	if findPotentialMoves(theGame.board, opposingPlayer) {
+	hasMoves, _ := findPotentialMoves(theGame.board, opposingPlayer)
+	if hasMoves {
 		theGame.turn = opposingPlayer
 	} else {
-		if !findPotentialMoves(theGame.board, move.Player) {
+		hasMoves, _ := findPotentialMoves(theGame.board, move.Player)
+		if !hasMoves {
 			theGame.winner = move.Player
 			return true
 		}

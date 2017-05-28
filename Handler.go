@@ -71,6 +71,10 @@ func move(w http.ResponseWriter, r *http.Request) {
 			response.Valid = false
 		} else {
 			move.Turn = theGame.turn
+			hasMove, board := findPotentialMoves(theGame.board, move.Turn)
+			if hasMove {
+				move.Board = board
+			}
 			var eventData = event{
 				"move",
 				move,
