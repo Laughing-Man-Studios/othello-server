@@ -8,7 +8,8 @@ Temp Client While Real Client is under Construction:
 API Documentation
 =================
 
-1. Routes
+1. **Routes**
+  
   These are standard http routes that the server uses to execute player commands.
 
 * /newgame
@@ -37,7 +38,8 @@ API Documentation
   Arguments: none
   Return: none
 
-2. Events
+2. **Events**
+  
   These are the different types of events that come over the event stream. Events come in this 
   JSON payload: `{ Type: String, Data: Object }`. Below are the different event types and what their associted data looks like.
 
