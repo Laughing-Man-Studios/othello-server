@@ -9,6 +9,7 @@ API Documentation
 =================
 
 1. Routes
+  These are standard http routes that the server uses to execute player commands.
 
 * /newgame
 
@@ -27,4 +28,32 @@ API Documentation
   Arguments: As form data - `row={row}&col={col}`
   Return: `{ Valid: bool }`
   * Valid: Tells whethor not a move was valid 
+
+* /events
+
+  This is the route for using the javascript EventSource object with. It provides an event
+  stream to the browser which will push all of the games notifications to the players.
+
+  Arguments: none
+  Return: none
+
+2. Events
+  These are the different types of events that come over the event stream. Events come in this 
+  JSON payload: `{ Type: String, Data: Object }`. Below are the different event types and what their associted data looks like.
+
+* move
+  Data: `{ Row: Number, Col, Number, Player: Number, Turn: Number, Board: Array}`
+  * Row: The row the space the piece was placed on
+  * Col: The column of the space the piece was place on
+  * Player: The player who placed the piece
+  * Turn: The player who's turn it now is
+  * Board: An array of arrays that make up the board. Each spot in each array can either be 0,1,2,3. O means the space is empty, 1 or 2 means a player 1 or 2 piece occupies that space, and 3 means that the space is empty, but a valid spot for the current player to put his piece.
+
+* start
+  Data: `{ Turn: Number }`
+  * Turn: The player who's turn it now is
+
+* end
+  Data: `{ Winner: Number }`
+  * Winner: The player who won.
 
