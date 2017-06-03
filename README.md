@@ -42,6 +42,7 @@ API Documentation
   JSON payload: `{ Type: String, Data: Object }`. Below are the different event types and what their associted data looks like.
 
 * move
+
   Data: `{ Row: Number, Col, Number, Player: Number, Turn: Number, Board: Array}`
   * Row: The row the space the piece was placed on
   * Col: The column of the space the piece was place on
@@ -50,10 +51,12 @@ API Documentation
   * Board: An array of arrays that make up the board. Each spot in each array can either be 0,1,2,3. O means the space is empty, 1 or 2 means a player 1 or 2 piece occupies that space, and 3 means that the space is empty, but a valid spot for the current player to put his piece.
 
 * start
+
   Data: `{ Turn: Number }`
   * Turn: The player who's turn it now is
 
 * end
+
   Data: `{ Winner: Number }`
   * Winner: The player who won.
 
