@@ -12,7 +12,7 @@ API Documentation
   
   These are standard http routes that the server uses to execute player commands.
 
-* /newgame
+* /newgame - GET
 
   This is the route to hit when a player wants to join a new game (potentially could be called joingame if a lobby is implemented)
   
@@ -22,7 +22,7 @@ API Documentation
   * Full: Tells whether or not the game already has 2 players. If it does, Full will be true
   * Player: If the game is not full, Player will indicates which player the current joiner has been designated(1 or 2)
 
-* /move
+* /move - POST
 
   This is the route to hit when a player wants to make a move 
 
@@ -30,7 +30,7 @@ API Documentation
   Return: `{ Valid: bool }`
   * Valid: Tells whethor not a move was valid 
 
-* /events
+* /events - GET
 
   This is the route for using the javascript EventSource object with. It provides an event
   stream to the browser which will push all of the games notifications to the players.
