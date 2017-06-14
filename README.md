@@ -40,8 +40,7 @@ API Documentation
 
 2. **Events**
   
-  These are the different types of events that come over the event stream. Events come in this 
-  JSON payload: `{ Type: String, Data: Object }`. Below are the different event types and what their associted data looks like.
+  These are the different types of events that come over the event stream. 
 
 * move
 
