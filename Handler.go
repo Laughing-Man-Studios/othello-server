@@ -104,7 +104,9 @@ func events(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case m := <-ch:
-			msg := fmt.Sprintf("data: %s\n\n", m)
+			evt := fmt.Sprintf("event: %s\n", m.Type)
+			msg := fmt.Sprintf("data: %s\n\n", m.Data)
+			fmt.Fprint(w, evt)
 			fmt.Fprintln(w, msg)
 			f.Flush()
 		case <-cn.CloseNotify():
