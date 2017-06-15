@@ -40,7 +40,7 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 				1,
 			},
 		}
-		defer publishEvent(eventData)
+		defer publish(eventData)
 		setupGame()
 	}
 	printResponse(w, response)
@@ -79,7 +79,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 				"move",
 				move,
 			}
-			defer publishEvent(eventData)
+			defer publish(eventData)
 		}
 
 	} else {
@@ -90,8 +90,8 @@ func move(w http.ResponseWriter, r *http.Request) {
 
 func events(w http.ResponseWriter, r *http.Request) {
 	f := w.(http.Flusher)
-	ch := Subscribe()
-	defer Unsubscribe(ch)
+	ch := subscribe()
+	defer unsubscribe(ch)
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -104,8 +104,14 @@ func events(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case m := <-ch:
+			data, err := json.Marshal(m.Data)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			evt := fmt.Sprintf("event: %s\n", m.Type)
-			msg := fmt.Sprintf("data: %s\n\n", m.Data)
+			msg := fmt.Sprintf("data: %s\n\n", data)
+
 			fmt.Fprint(w, evt)
 			fmt.Fprintln(w, msg)
 			f.Flush()

@@ -103,7 +103,7 @@ func movePiece(move moveData) bool {
 	if valid {
 		printGame(&theGame.board)
 		if checkForWin(move) {
-			defer publishEvent(event{
+			defer publish(event{
 				"win",
 				endData{
 					move.Player,
