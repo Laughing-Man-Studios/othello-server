@@ -5,6 +5,8 @@ Temp Client While Real Client is under Construction:
   
   To use: Place contents of gist in static directory of source (make one if necessary)
 
+Heroku App is now up! Check it out [here](https://othello-master.herokuapp.com/)
+
 API Documentation
 =================
 
