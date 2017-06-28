@@ -1,5 +1,9 @@
 package main
 
+import (
+	"time"
+)
+
 type event struct {
 	Type string
 	Data interface{}
@@ -26,5 +30,19 @@ func unsubscribe(ch chan event) {
 func publish(evt event) {
 	for ch := range b.subscribers {
 		ch <- evt
+	}
+}
+
+func waitForSubscribers(numOfSubscribers int) bool {
+	timerChan := time.NewTimer(time.Second * 2).C
+	for {
+		select {
+		case <-timerChan:
+			return false
+		default:
+			if len(b.subscribers) == numOfSubscribers {
+				return true
+			}
+		}
 	}
 }
