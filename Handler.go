@@ -40,7 +40,11 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 				1,
 			},
 		}
-		defer publish(eventData)
+		go func() {
+			if waitForSubscribers(2) {
+				publish(eventData)
+			}
+		}()
 		setupGame()
 	}
 	printResponse(w, response)
