@@ -1,0 +1,83 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Othello</title>
+  <meta name="description" content="Online Othello Game Written in Go and Polymer">
+  <meta name="author" content="Laughing-Man-Studios">
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <script src="jquery-3.2.1.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <h1 id="header">Welcome to Othello</h1>
+
+  <h3>Add Peice To:</h3>
+  <form name="move">
+    <span>
+        <label for="row">Row:</label>
+        <input type="text" id="row" name="Row">
+      </span>
+    <span>
+        <label for="col">Column:</label>
+        <input type="text" id="col" name="Col">
+      </span>
+    <button id="button" type="submit" disabled="true">Make Move</button>
+  </form>
+  <script>
+    let source = null;
+    let player = 0;
+
+    $('form').submit(function () {
+      $.post('/move/' + player, $(this).serialize()).done(function(data){
+        if(data){
+          $('body').append('<p>'+data+'</p>');
+        }
+      });
+      return false;
+    });
+
+    $.get('/newgame', function (data) {
+      response = JSON.parse(data);
+      if(!response.full){
+        source = new EventSource('/events');
+        source.addEventListener('move', function (e) {
+          const moveData = JSON.parse(e.data);
+          $('body').append('<p>Player ' + moveData.Player + ' added piece to: Row:' + moveData.Row + ' Column:' + moveData.Col +
+            '</p>');
+          if(moveData.Turn === player){
+              $('button').prop("disabled", false);
+          } else {
+            $('button').prop("disabled", true);
+          }
+        }, false);
+        source.addEventListener('start', function (e) {
+          const startData = JSON.parse(e.data);
+          if(player === startData.Turn){
+            $('button').prop("disabled", false);
+          }
+          $('body').append('<p>New Game Started!</p>');
+        }, false);
+        source.addEventListener('end', function (e) {
+          const endData = JSON.parse(e.data);
+          $('body').append('<p>Player '+endData.Winner+' has won!');
+        }, false);
+        player = response.Player;
+        if(player == 1){
+           $('body').append('<p id="waiting">Waiting On Other Player</p>');
+        }
+      } else {
+        $('form').remove();
+        $('body').append('<p>Ah Snap! The game was full</p>');
+      }
+    });
+  </script>
+</body>
+
+</html>
