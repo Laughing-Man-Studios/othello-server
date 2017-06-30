@@ -3,3 +3,4 @@ static/
 *.exe~
 debug
 gin-bin
+vendor/*/
