@@ -1,6 +1,19 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "CmsKJLZZkfiiiOI9MKkFv3XL+Mo=",
+			"path": "github.com/gorilla/mux",
+			"revision": "599cba5e7b6137d46ddf58fb1765f5d928e69604",
+			"revisionTime": "2017-02-28T22:43:54Z"
+		},
+		{
+			"checksumSHA1": "j0Oi7nwcaFKaiR2e+/zjCE+5TaQ=",
+			"path": "github.com/gorilla/schema",
+			"revision": "f3c80893412cff6b5596a82f3cb8c31c5a971aa9",
+			"revisionTime": "2017-03-17T17:31:00Z"
+		}
+	],
 	"rootPath": "github.com/Laughing-Man-Studios/othello-server"
 }
