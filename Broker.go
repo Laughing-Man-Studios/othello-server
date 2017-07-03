@@ -24,7 +24,12 @@ func subscribe() chan event {
 }
 
 func unsubscribe(ch chan event) {
+	var eventData = event{
+		"left",
+		"",
+	}
 	delete(b.subscribers, ch)
+	publish(eventData)
 }
 
 func publish(evt event) {

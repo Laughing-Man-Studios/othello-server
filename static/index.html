@@ -66,8 +66,11 @@
         }, false);
         source.addEventListener('end', function (e) {
           const endData = JSON.parse(e.data);
-          $('body').append('<p>Player '+endData.Winner+' has won!');
+          $('body').append('<p>Player '+endData.Winner+' has won!</p>');
         }, false);
+        source.addEventListener('left', function (e) {
+          $('body').append('<p>Other player has left</p>');
+        })
         player = response.Player;
         if(player == 1){
            $('body').append('<p id="waiting">Waiting On Other Player</p>');
