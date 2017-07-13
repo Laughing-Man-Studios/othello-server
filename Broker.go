@@ -17,10 +17,14 @@ var b = &broker{
 	subscribers: make(map[chan event]bool),
 }
 
-func subscribe() chan event {
+func subscribe() (bool, chan event) {
 	ch := make(chan event)
-	b.subscribers[ch] = true
-	return ch
+	if len(b.subscribers) <= 2 {
+		b.subscribers[ch] = true
+		return true, ch
+	}
+	return false, ch
+
 }
 
 func unsubscribe(ch chan event) {

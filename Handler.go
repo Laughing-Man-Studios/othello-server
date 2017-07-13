@@ -94,34 +94,37 @@ func move(w http.ResponseWriter, r *http.Request) {
 
 func events(w http.ResponseWriter, r *http.Request) {
 	f := w.(http.Flusher)
-	ch := subscribe()
-	defer unsubscribe(ch)
+	success, ch := subscribe()
 
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
+	if success {
+		defer unsubscribe(ch)
 
-	f.Flush()
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
 
-	cn := w.(http.CloseNotifier)
+		f.Flush()
 
-	for {
-		select {
-		case m := <-ch:
-			data, err := json.Marshal(m.Data)
-			if err != nil {
-				log.Fatal(err)
+		cn := w.(http.CloseNotifier)
+
+		for {
+			select {
+			case m := <-ch:
+				data, err := json.Marshal(m.Data)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				evt := fmt.Sprintf("event: %s\n", m.Type)
+				msg := fmt.Sprintf("data: %s\n\n", data)
+
+				fmt.Fprint(w, evt)
+				fmt.Fprintln(w, msg)
+				f.Flush()
+			case <-cn.CloseNotify():
+				fmt.Println("Connection Close")
+				return
 			}
-
-			evt := fmt.Sprintf("event: %s\n", m.Type)
-			msg := fmt.Sprintf("data: %s\n\n", data)
-
-			fmt.Fprint(w, evt)
-			fmt.Fprintln(w, msg)
-			f.Flush()
-		case <-cn.CloseNotify():
-			fmt.Println("Connection Close")
-			return
 		}
 	}
 }
