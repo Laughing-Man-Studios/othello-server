@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -63,13 +62,11 @@ func ping() {
 		"ping",
 		"ping",
 	}
-	fmt.Println("inPing")
 
 	for {
 		select {
 		case <-tick:
 			publish(pingEvent)
-			fmt.Println("ping")
 		}
 	}
 }
