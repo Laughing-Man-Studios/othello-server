@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -52,6 +53,23 @@ func waitForSubscribers(numOfSubscribers int) bool {
 			if len(b.subscribers) == numOfSubscribers {
 				return true
 			}
+		}
+	}
+}
+
+func ping() {
+	tick := time.Tick(50 * time.Second)
+	pingEvent := event{
+		"ping",
+		"ping",
+	}
+	fmt.Println("inPing")
+
+	for {
+		select {
+		case <-tick:
+			publish(pingEvent)
+			fmt.Println("ping")
 		}
 	}
 }

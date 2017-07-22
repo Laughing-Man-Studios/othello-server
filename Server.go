@@ -12,5 +12,6 @@ func main() {
 	if !(exist) {
 		port = "8080"
 	}
+	go ping()
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }

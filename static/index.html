@@ -45,7 +45,7 @@
 
     $.get('/newgame', function (data) {
       response = JSON.parse(data);
-      if(!response.full){
+      if(!response.Full){
         source = new EventSource('/events');
         source.addEventListener('move', function (e) {
           const moveData = JSON.parse(e.data);
