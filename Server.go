@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-    "fmt"
 )
 
 func main() {
@@ -13,7 +12,6 @@ func main() {
 	if !(exist) {
 		port = "8080"
 	}
-    fmt.Printf("%v\n", port)
 	go ping()
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
