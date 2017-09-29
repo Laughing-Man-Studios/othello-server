@@ -87,7 +87,6 @@ func checkDirection(offsetY int, offsetX int, originX int, originY int, p int, b
 
 func movePiece(move moveData) bool {
 	var valid = false
-
 	if theGame.board[move.Row][move.Col] == 0 && theGame.winner == 0 {
 		for i := -1; i < 2; i++ {
 			for j := -1; j < 2; j++ {

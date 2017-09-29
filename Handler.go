@@ -16,8 +16,12 @@ type moveResponse struct {
 }
 
 type newGameResponse struct {
-	Full   bool
+	Full bool
 	Player int
+}
+
+type newBoard struct {
+Board [8][8]int
 }
 
 func newGame(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +89,6 @@ func move(w http.ResponseWriter, r *http.Request) {
 			}
 			defer publish(eventData)
 		}
-
 	} else {
 		response.Valid = false
 	}
@@ -127,6 +130,32 @@ func events(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+}
+
+func setboard(w http.ResponseWriter, r *http.Request){
+
+	var newBoard newBoard
+	var move moveData
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&newBoard)
+	if err != nil {
+		panic(err)
+	}
+	theGame.board = newBoard.Board
+	move.Turn = theGame.turn
+	hasMove, board := findPotentialMoves(theGame.board, move.Turn)
+	if hasMove {
+		move.Board = board
+	} else {
+		//seems like a sloppy fix
+		move.Board = board
+	}
+	var eventData = event{
+		"move",
+		move,
+	}
+	defer publish(eventData)
 }
 
 func printResponse(w http.ResponseWriter, response interface{}) {

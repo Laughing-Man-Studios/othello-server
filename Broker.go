@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+  "fmt"
 )
 
 type event struct {
@@ -50,6 +51,7 @@ func waitForSubscribers(numOfSubscribers int) bool {
 			return false
 		default:
 			if len(b.subscribers) == numOfSubscribers {
+
 				return true
 			}
 		}
