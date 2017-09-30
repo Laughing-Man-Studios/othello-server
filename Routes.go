@@ -39,6 +39,12 @@ var routeMap = routes{
 		"/events",
 		events,
 	},
+  route{
+		"SetBoard",
+		"Post",
+		"/setboard",
+		setboard,
+	},
 }
 
 var static = staticRoutes{
