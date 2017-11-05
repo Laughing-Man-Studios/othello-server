@@ -171,7 +171,7 @@ func getOpposingPlayer(p int) int {
 }
 
 func moveInBounds(x int, y int) bool {
-	return x > 0 && y > 0 && x < rowLength-1 && y < colLength-1
+	return x >= 0 && y >= 0 && x <= rowLength-1 && y <= colLength-1
 }
 
 func printGame(board *[8][8]int) {
