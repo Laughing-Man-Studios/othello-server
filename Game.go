@@ -175,8 +175,11 @@ func moveInBounds(x int, y int) bool {
 }
 
 func printGame(board *[8][8]int) {
-	for _, row := range board {
-		fmt.Println(row)
+	if *runMode == "deb" {
+		for _, row := range board {
+			fmt.Println(row)
+		}
+		fmt.Printf("Player1: %v - Player2: %v\n", theGame.score[1], theGame.score[2])
 	}
-	fmt.Printf("Player1: %v - Player2: %v\n", theGame.score[1], theGame.score[2])
+
 }
