@@ -103,9 +103,9 @@ func movePiece(move moveData) bool {
 		printGame(&theGame.board)
 		if checkForWin(move) {
 			defer publish(event{
-				"win",
+				"end",
 				endData{
-					move.Player,
+					theGame.winner,
 				},
 			})
 		}
@@ -121,7 +121,11 @@ func checkForWin(move moveData) bool {
 	} else {
 		hasMoves, _ := findPotentialMoves(theGame.board, move.Player)
 		if !hasMoves {
-			theGame.winner = move.Player
+			if theGame.score[move.Player] > theGame.score[opposingPlayer] {
+				theGame.winner = move.Player
+			} else {
+				theGame.winner = opposingPlayer
+			}
 			return true
 		}
 	}

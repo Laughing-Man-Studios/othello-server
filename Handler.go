@@ -16,12 +16,12 @@ type moveResponse struct {
 }
 
 type newGameResponse struct {
-	Full bool
+	Full   bool
 	Player int
 }
 
 type newBoard struct {
-Board [8][8]int
+	Board [8][8]int
 }
 
 func newGame(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +67,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 	if player > 0 && player == theGame.turn {
 
 		move.Player = player
+		move.Board = theGame.board
 		err = r.ParseForm()
 		if err != nil {
 			log.Fatal(err)
@@ -132,7 +133,7 @@ func events(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func setboard(w http.ResponseWriter, r *http.Request){
+func setboard(w http.ResponseWriter, r *http.Request) {
 
 	var newBoard newBoard
 	var move moveData
